@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using static OwnProject.MathUtilities;
 
 namespace OwnProject
 {
@@ -44,6 +45,20 @@ namespace OwnProject
         }
 
         /// <summary>
+        /// Adjusts a point's coordinates to mitigate floating-point precision errors by rounding very small values to zero.
+        /// </summary>
+        /// <param name="point">The point to adjust.</param>
+        /// <param name="epsilon">The precision threshold (default is 1e-10).</param>
+        /// <returns>The adjusted point with small values rounded to zero.</returns>
+        private static PointD AdjustForPrecision(PointD point, double epsilon = 1e-10)
+        {
+            return new PointD(
+                Math.Abs(point.X) < epsilon ? 0 : point.X,
+                Math.Abs(point.Y) < epsilon ? 0 : point.Y
+            );
+        }
+
+        /// <summary>
         /// Rotates a point around a specified center by a given angle in radians.
         /// </summary>
         /// <param name="point">The point to rotate.</param>
@@ -60,7 +75,7 @@ namespace OwnProject
             double rotatedX = offsetX * Math.Cos(angleInRadians) - offsetY * Math.Sin(angleInRadians) + center.X;
             double rotatedY = offsetX * Math.Sin(angleInRadians) + offsetY * Math.Cos(angleInRadians) + center.Y;
 
-            return new PointD(rotatedX, rotatedY);
+            return AdjustForPrecision(new PointD(rotatedX, rotatedY));
         }
 
         /// <summary>
@@ -89,16 +104,6 @@ namespace OwnProject
         {
             double angleInRadians = DegreesToRadians(clockwise ? -angleInDegrees : angleInDegrees);
             return points.Select(point => RotatePointInternal(point, angleInRadians, center)).ToList();
-        }
-
-        /// <summary>
-        /// Converts an angle in degrees to radians.
-        /// </summary>
-        /// <param name="degrees">The angle in degrees.</param>
-        /// <returns>The angle in radians.</returns>
-        private static double DegreesToRadians(double degrees)
-        {
-            return degrees * Math.PI / 180.0;
         }
     }
 }
