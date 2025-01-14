@@ -3,28 +3,18 @@
 namespace OwnProject
 {
     /// <summary>
-    /// Provides mathematical utility methods for common operations.
+    /// Provides common mathematical utility functions for general-purpose calculations.
     /// </summary>
-    public class MathUtilities
+    public static class MathUtilities
     {
         /// <summary>
         /// Converts an angle in degrees to radians.
         /// </summary>
         /// <param name="degrees">The angle in degrees.</param>
-        /// <returns>The angle in radians.</returns>
+        /// <returns>The equivalent angle in radians.</returns>
         public static double DegreesToRadians(double degrees)
         {
             return degrees * Math.PI / 180.0;
-        }
-
-        /// <summary>
-        /// Converts an angle from radians to degrees.
-        /// </summary>
-        /// <param name="radians">The angle in radians.</param>
-        /// <returns>The angle in degrees.</returns>
-        public static double RadiansToDegrees(double radians)
-        {
-            return radians * 180.0 / Math.PI;
         }
     }
 }
