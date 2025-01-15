@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using static OwnProject.PointRotator;
+using static OwnProject.MathUtilities;
 using static System.Console;
 
 namespace OwnProject
@@ -28,7 +29,7 @@ namespace OwnProject
             //    new PointF(1, 4),
             //    new PointF(2, 2)
             //};
-            PointD rotatedPoint = PointRotator.RotatePoint(new PointD(-28.33632505,74.17495355 - 28.33632505), 24.092136856491987, new PointD(74.17495355, 0), false);
+            PointD rotatedPoint = RotatePoint(new PointD(-28.33632505,74.17495355 - 28.33632505), 24.092136856491987, new PointD(74.17495355, 0), false);
             //WriteLine(string.Join(",\n", rotatedPoints));
 
             //using (StreamWriter sW = new StreamWriter("test1.svg"))

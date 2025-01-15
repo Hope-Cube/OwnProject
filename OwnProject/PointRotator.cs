@@ -12,39 +12,6 @@ namespace OwnProject
     internal class PointRotator
     {
         /// <summary>
-        /// Represents a point in 2D space with double precision coordinates.
-        /// </summary>
-        public struct PointD
-        {
-            /// <summary>
-            /// The X coordinate of the point.
-            /// </summary>
-            public double X { get; }
-
-            /// <summary>
-            /// The Y coordinate of the point.
-            /// </summary>
-            public double Y { get; }
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="PointD"/> structure.
-            /// </summary>
-            /// <param name="x">The X coordinate of the point.</param>
-            /// <param name="y">The Y coordinate of the point.</param>
-            public PointD(double x, double y)
-            {
-                X = x;
-                Y = y;
-            }
-
-            /// <summary>
-            /// Returns a string representation of the point.
-            /// </summary>
-            /// <returns>A string in the format "(X, Y)".</returns>
-            public override string ToString() => $"({X}, {Y})";
-        }
-
-        /// <summary>
         /// Adjusts a point's coordinates to mitigate floating-point precision errors by rounding very small values to zero.
         /// </summary>
         /// <param name="point">The point to adjust.</param>
