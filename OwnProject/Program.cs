@@ -28,12 +28,10 @@ namespace OwnProject
             //    new PointF(1, 4),
             //    new PointF(2, 2)
             //};
-            List<PointD> rotatedPoints = new List<PointD>();
             PointD center = new PointD(74.17495355, 0);
             double angleInDegrees = 24.092136856491987 + 180;
-            rotatedPoints = RotatePoints(points, angleInDegrees, center, false);
-            WriteLine(string.Join(",\n", rotatedPoints));
-
+            List<PointD> rotatedPoints = RotatePoints(points, angleInDegrees, center, false);
+            
             SVGConverter.GenerateSVG("test", .5,"444", "ddd", 800, rotatedPoints, true);
 
             ReadKey(true);
