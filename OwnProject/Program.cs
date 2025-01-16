@@ -34,10 +34,7 @@ namespace OwnProject
             rotatedPoints = RotatePoints(points, angleInDegrees, center, false);
             WriteLine(string.Join(",\n", rotatedPoints));
 
-            using (StreamWriter sW = new StreamWriter("test.svg"))
-            {
-                sW.Write(SVGConverter.GenerateSVG(.5,"444", "ddd", 800, rotatedPoints, true));
-            }
+            SVGConverter.GenerateSVG("test", .5,"444", "ddd", 800, rotatedPoints, true);
 
             ReadKey(true);
         }

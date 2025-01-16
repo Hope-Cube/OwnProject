@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using static OwnProject.MathUtilities;
 
@@ -13,19 +14,23 @@ namespace OwnProject
     public static class SVGConverter
     {
         /// <summary>
-        /// Generates an SVG string with a path defined by the given points.
+        /// Generates an SVG file with a path defined by the given points.
         /// </summary>
+        /// <param name="name">The name of the SVG file to create (without extension).</param>
         /// <param name="strokeWidth">The stroke width of the path.</param>
         /// <param name="strokeColor">The stroke color in hexadecimal format (e.g., "ff0000").</param>
         /// <param name="fillColor">The fill color in hexadecimal format (e.g., "00ff00").</param>
         /// <param name="size">The width and height of the SVG viewport.</param>
         /// <param name="points">A list of points defining the path.</param>
         /// <param name="isRounded">Specifies whether the coordinates should be rounded to 3 decimal places.</param>
-        /// <returns>A complete SVG string with the specified path and styling.</returns>
-        /// <exception cref="ArgumentException">Thrown when the points list is null or empty.</exception>
-        public static string GenerateSVG(double strokeWidth, string strokeColor, string fillColor, double size, List<PointD> points, bool isRounded)
+        /// <exception cref="ArgumentException">Thrown when the points list or filename is invalid.</exception>
+        /// <exception cref="IOException">Thrown when an error occurs while writing the file.</exception>
+        public static void GenerateSVG(string name, double strokeWidth, string strokeColor, string fillColor, double size, List<PointD> points, bool isRounded)
         {
-            // Validate input
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("The file name must not be null or empty.", nameof(name));
+
             if (points == null || points.Count == 0)
                 throw new ArgumentException("The points list must contain at least one point.", nameof(points));
 
@@ -44,52 +49,56 @@ namespace OwnProject
                 height = Math.Round(height, 3);
             }
 
-
             // Build the SVG header
             string svgHeader = $"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"{minX.ToString(CultureInfo.InvariantCulture)} {minY.ToString(CultureInfo.InvariantCulture)} {width.ToString(CultureInfo.InvariantCulture)} {height.ToString(CultureInfo.InvariantCulture)}\" width=\"{size.ToString(CultureInfo.InvariantCulture)}\" height=\"{size.ToString(CultureInfo.InvariantCulture)}\">";
             string pathStyle = $"<path stroke-width=\"{strokeWidth.ToString(CultureInfo.InvariantCulture)}\" stroke=\"#{strokeColor}\" fill=\"#{fillColor}\" d=\"m";
 
-            // Start path data
-            double startingX = points[0].X;
-            double startingY = points[0].Y;
-
-            //Apply rounding if specified
-            if (isRounded)
-            {
-                startingX = Math.Round(startingX, 3);
-                startingY = Math.Round(startingY, 3);
-            }
-
-            string pathData = $"{startingX.ToString(CultureInfo.InvariantCulture)} {startingY.ToString(CultureInfo.InvariantCulture)}";
+            // Build the path data
+            var pathDataBuilder = new System.Text.StringBuilder();
             double currentX = points[0].X;
             double currentY = points[0].Y;
 
-            // Generate relative coordinates for the path
+            // Apply rounding to the starting point if required
+            if (isRounded)
+            {
+                currentX = Math.Round(currentX, 3);
+                currentY = Math.Round(currentY, 3);
+            }
+
+            pathDataBuilder.Append($"{currentX.ToString(CultureInfo.InvariantCulture)} {currentY.ToString(CultureInfo.InvariantCulture)}");
+
             for (int i = 1; i < points.Count; i++)
             {
-                // Calculate deltas
                 double deltaX = points[i].X - currentX;
                 double deltaY = points[i].Y - currentY;
 
-                // Apply rounding if specified
                 if (isRounded)
                 {
                     deltaX = Math.Round(deltaX, 3);
                     deltaY = Math.Round(deltaY, 3);
                 }
 
-                // Append relative coordinates
-                pathData += $" {deltaX.ToString(CultureInfo.InvariantCulture)} {deltaY.ToString(CultureInfo.InvariantCulture)}";
+                pathDataBuilder.Append($" {deltaX.ToString(CultureInfo.InvariantCulture)} {deltaY.ToString(CultureInfo.InvariantCulture)}");
 
-                // Update current position
                 currentX = points[i].X;
                 currentY = points[i].Y;
             }
 
             // Close the path and complete the SVG
-            string svg = $"{svgHeader}{pathStyle.Replace("stroke-width=\"0", "stroke-width=\"")}{pathData.Replace(" -", "-")}z\"/></svg>";
+            string svg = $"{svgHeader}{pathStyle}{pathDataBuilder}z\"/></svg>";
 
-            return svg;
+            // Write to file
+            try
+            {
+                using (var writer = new StreamWriter($"{name}.svg"))
+                {
+                    writer.Write(svg);
+                }
+            }
+            catch (IOException ex)
+            {
+                throw new IOException($"Failed to write the SVG file: {ex.Message}", ex);
+            }
         }
     }
 }
